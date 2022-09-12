@@ -74,6 +74,9 @@ echo "          - \"$TRAEFIK_BASICAUTH_USER\"" >> "./fileConfig/basic-auth.yml"
 ./update_cf_ips.sh
 docker-compose up -d
 
+echo "Installing Traefik Cloudflare IP updater to cron."
+crontab -l | { cat; echo "0 7 1 * * $HOME/services/traefik/update_cf_ips.sh"; } | crontab -
+
 echo "Updating Diun compose file."
 cd "$HOME/services/diun"
 replace "[MAIL_HOST]" "$DIUN_MAIL_HOST" "./docker-compose.yml"

@@ -15,3 +15,4 @@ IPS=`echo "$IPS" | sed 's/\./\\\\./g'`
 IPS=`echo "$IPS" | sed "s?\/?\\\\\/?g"`
 echo "Saved changes."
 sed 's/trustedIPs=.*"/trustedIPs='172.18.0.0\\\/16,"$IPS"'"/g' "$DIR/docker-compose.yml" -i
+docker-compose up -d
