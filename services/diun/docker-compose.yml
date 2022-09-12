@@ -1,0 +1,27 @@
+version: "3.4"
+
+services:
+  diun:
+    image: crazymax/diun:latest
+    container_name: diun
+    volumes:
+      - ./data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - TZ=America/New_York
+      - LOG_LEVEL=info
+      - LOG_JSON=false
+      - DIUN_WATCH_WORKERS=20
+      - DIUN_WATCH_SCHEDULE=0 */6 * * *
+      - DIUN_PROVIDERS_DOCKER=true
+      - DIUN_PROVIDERS_DOCKER_WATCHBYDEFAULT=true
+      - DIUN_NOTIF_MAIL_HOST=[MAIL_HOST]
+      - DIUN_NOTIF_MAIL_PORT=[MAIL_PORT]
+      - DIUN_NOTIF_MAIL_SSL=[MAIL_SSL]
+      - DIUN_NOTIF_MAIL_INSECURESKIPVERIFY=0
+      - DIUN_NOTIF_MAIL_LOCALNAME=[MAIL_LOCALNAME]
+      - DIUN_NOTIF_MAIL_USERNAME=[MAIL_USERNAME]
+      - DIUN_NOTIF_MAIL_PASSWORD=[MAIL_PASSWORD]
+      - DIUN_NOTIF_MAIL_FROM=[MAIL_FROM]
+      - DIUN_NOTIF_MAIL_TO=[MAIL_TO]
+    restart: unless-stopped
