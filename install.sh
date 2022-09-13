@@ -56,10 +56,14 @@ sudo ufw allow https
 sudo ufw enable
 
 echo "Creating Docker network."
-docker network create proxy
+sudo -u ${USER} docker network create proxy
 
 echo "Copying service files."
 cp -r "$CWD/services" "$HOME/services"
+
+echo "Disabling userland proxy."
+echo "{\"userland-proxy\": false}" > /etc/docker/daemon.json
+sudo systemctl restart docker
 
 echo "Updating Traefik compose file."
 cd "$HOME/services/traefik"
@@ -69,7 +73,7 @@ replace "[CF_EMAIL]" "$TRAEFIK_CF_EMAIL" "./docker-compose.yml"
 replace "[CF_DNS_TOKEN]" "$TRAEFIK_CF_DNS_TOKEN" "./docker-compose.yml"
 echo "          - \"$TRAEFIK_BASICAUTH_USER\"" >> "./fileConfig/basic-auth.yml"
 ./update_cf_ips.sh
-docker-compose up -d
+sudo -u docker-compose up -d
 
 echo "Installing Traefik Cloudflare IP updater to cron."
 crontab -l | { cat; echo "0 7 1 * * $HOME/services/traefik/update_cf_ips.sh"; } | crontab -
@@ -84,7 +88,7 @@ replace "[MAIL_USERNAME]" "$DIUN_MAIL_USERNAME" "./docker-compose.yml"
 replace "[MAIL_PASSWORD]" "$DIUN_MAIL_PASSWORD" "./docker-compose.yml"
 replace "[MAIL_FROM]" "$DIUN_MAIL_FROM" "./docker-compose.yml"
 replace "[MAIL_TO]" "$DIUN_MAIL_TO" "./docker-compose.yml"
-docker-compose up -d
+sudo -u ${USER} docker-compose up -d
 
 echo "Copying backup files."
 cp -r "$CWD/backups" "$HOME/backups"
