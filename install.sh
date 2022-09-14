@@ -36,8 +36,10 @@ function replace {
   sed 's/'"$escaped"'/'"$value"'/g' "$3" -i
 }
 
+echo "Installing required packages."
+sudo apt-get install -y jq nano backblaze-b2 apt-transport-https ca-certificates curl gnupg-agent software-properties-common
+
 echo "Installing Docker."
-sudo apt-get install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt-get update -y
@@ -45,9 +47,6 @@ sudo apt-get install -y docker-ce docker-compose
 sudo systemctl start docker
 sudo systemctl enable docker
 sudo usermod -aG docker ${USER}
-
-echo "Installing required packages."
-sudo apt-get install -y jq nano backblaze-b2
 
 echo "Configuring firewall."
 sudo ufw allow OpenSSH
@@ -62,7 +61,7 @@ echo "Copying service files."
 cp -r "$CWD/services" "$HOME/services"
 
 echo "Disabling userland proxy."
-echo "{\"userland-proxy\": false}" > /etc/docker/daemon.json
+echo "{\"userland-proxy\": false}" | sudo tee /etc/docker/daemon.json
 sudo systemctl restart docker
 
 echo "Updating Traefik compose file."
